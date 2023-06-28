@@ -1,24 +1,60 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Favourites from "./Pages/Favourites";
+import HomePage from "./Pages/HomePage";
+import NotFound from "./Pages/NotFound";
+import Nav from "./Components/Nav";
+import { useState } from "react";
 
 function App() {
+  const [contacts, Setcontacts] = useState([]);
+
+  const formsub = (data) => {
+    Setcontacts([...contacts, data]);
+  };
+  const deleteContact = (id) => {
+    let newContact = contacts.filter((singleContact) => {
+      return singleContact.id !== id;
+    });
+    Setcontacts(newContact);
+  };
+  const favToggle = (id) => {
+    let FavList = contacts.map((singleContact) => {
+      return singleContact.id === id
+        ? { ...singleContact,fav: !singleContact.fav }
+        : singleContact;
+    });
+    Setcontacts(FavList);
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Router>
+        <Nav />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <HomePage
+                formsub={formsub}
+                contacts={contacts}
+                deleteContact={deleteContact}
+                favToggle={favToggle}
+              />
+            }
+          />
+          <Route
+            path="/favourite"
+            element={
+              <Favourites
+                contacts={contacts}
+                deleteContact={deleteContact}
+                favToggle={favToggle}
+              />
+            }
+          />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Router>
+    </>
   );
 }
 
